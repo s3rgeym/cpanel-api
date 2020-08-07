@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import logging
 import urllib.parse as uparse
 from base64 import b64encode
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple
+from typing import Any, Callable, Dict, Literal, Optional, Tuple
 
 import requests
 import urllib3
@@ -10,24 +11,27 @@ from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 __author__ = 'Sergey M'
 __email__ = 'yamldeveloper@proton.me'
 __copyright__ = 'Copyright 2020, Sergey M'
 __license__ = 'MIT'
 __url__ = 'https://github.com/s3rgeym/cpanel-api'
 
+__all__ = (
+    'BadResponse',
+    'CPanelClient',
+    'ClientError',
+    'Result',
+    'Unauthorized',
+)
+
 DEFAULT_USER_AGENT = (
     'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
 )
 
-__all__ = (
-    'ClientError',
-    'Unauthorized',
-    'BadResponse',
-    'Result',
-    'CPanelClient',
-)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class ClientError(Exception):
@@ -56,7 +60,7 @@ class Result(AttrDict):
     pass
 
 
-class Call:
+class ApiCallWrapper:
     def __init__(self, client: 'CPanelClient', module: str) -> None:
         self.client = client
         self.module = module
@@ -74,10 +78,10 @@ class CPanelClient:
         self,
         hostname: str,
         username: str,
-        password: Optional[str] = None,
-        *,
-        hash: Optional[str] = None,
+        password: str,
         port: int = 2083,
+        *,
+        auth_type: Literal['hash', 'password', 'token'] = 'password',
         session: Optional[requests.Session] = None,
         ssl: bool = True,
         timeout: float = 10.0,
@@ -86,8 +90,8 @@ class CPanelClient:
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.hash = hash
         self.port = port
+        self.auth_type = auth_type
         if session is None:
             session = requests.session()
             session.headers.update({'User-Agent': DEFAULT_USER_AGENT})
@@ -98,12 +102,17 @@ class CPanelClient:
 
     @property
     def auth(self) -> str:
-        if self.hash:
-            return f'WHM {self.username}:{self.hash}'
-        encoded = b64encode(
-            f'{self.username}:{self.password}'.encode()
-        ).decode()
-        return f'Basic {encoded}'
+        credentials: str = f'{self.username}:{self.password}'
+        if self.auth_type == 'password':
+            encoded = b64encode(credentials.encode()).decode()
+            auth = f'Basic {encoded}'
+        elif self.auth_type == 'hash':
+            auth = f'WHM {credentials}'
+        elif self.auth_type == 'token':
+            auth = f'whm {credentials}'
+        else:
+            raise ValueError(f'unknown auth type: {self.auth_type!r}')
+        return auth
 
     @property
     def base_url(self) -> str:
@@ -121,10 +130,12 @@ class CPanelClient:
         url = uparse.urljoin(self.base_url, f'/execute/{module}/{function}')
         params = dict(params or {})
         params.update(kwargs)
+        logger.debug('request params: %s', ', '.join(params))
         headers = {'Authorization': self.auth}
         r = self.session.post(
             url,
             params,
+            follow_redirects=False,
             headers=headers,
             timeout=self.timeout,
             verify=self.verify,
@@ -136,5 +147,5 @@ class CPanelClient:
         except ValueError:
             raise BadResponse()
 
-    def __getattr__(self, name: str) -> Call:
-        return Call(self, name)
+    def __getattr__(self, name: str) -> ApiCallWrapper:
+        return ApiCallWrapper(self, name)

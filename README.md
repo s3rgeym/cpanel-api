@@ -3,10 +3,10 @@
 Supports only UAPI.
 
 ```zsh
-$ pip install cpanel_api
+$ pip install cpanel-api
 ```
 
-Examples:
+Basic usage:
 
 ```python
 #!/usr/bin/env python
@@ -24,19 +24,27 @@ password = 'PASSWORD'
 
 client = CPanelClient(hostname, username, password)
 
-client.Module.function({'param': 'value'}, param='value')
-client.api('Module', 'function', {'param': 'value'}, param='value')
+r = client.SSH.get_port()
+print('SSH port:', r.data.port)
 
-res = client.SSH.get_port()
-# {
-#     'data': {'port': '1243'},
-#     'errors': None,
-#     'metadata': {},
-#     'warnings': None,
-#     'messages': None,
-#     'status': 1,
-# }
-print(res.data.port)
+from pprint import pprint
+r = client.DomainInfo.list_domains()
+pprint(r.data)
+```
+
+Function call syntax:
+
+```python
+client.ModuleName.function_name({'param': 'value'})
+client.ModuleName.function_name(param='value')
+client.ModuleName.function_name({'param': 'value'}, param='value')
+client.api('ModuleName', 'function_name', {'param': 'value'}, param='value')
+```
+
+Pagination:
+
+```python
+client.ModuleName.function_name({'api.paginate': 1, 'api.paginate_size': 10, 'api.paginate_page': 2})
 ```
 
 Links:
