@@ -15,7 +15,7 @@ __author__ = 'Sergey M'
 __email__ = 'tz4678@gmail.com'
 __copyright__ = 'Copyright 2020, Sergey M'
 __license__ = 'MIT'
-__url__ = 'https://github.com/tz4678/cpanel_api'
+__url__ = 'https://github.com/tz4678/cpanel-api'
 
 DEFAULT_USER_AGENT = (
     'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
