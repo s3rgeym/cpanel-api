@@ -10,7 +10,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __author__ = 'Sergey M'
 __email__ = 'tz4678@gmail.com'
 __copyright__ = 'Copyright 2020, Sergey M'
