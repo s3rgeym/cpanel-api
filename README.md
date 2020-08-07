@@ -18,7 +18,7 @@ from cpanel_api import *
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 
-hostname = 'HOSTNAME_OR_IP_ADRESS'
+hostname = 'HOSTNAME_OR_IPADRESS'
 username = 'USERNAME'
 password = 'PASSWORD'
 
