@@ -2,11 +2,15 @@
 
 Supports cPanel API 2 and UAPI.
 
+## Install
+
 ```zsh
 $ pip install cpanel-api
 ```
 
-Basic usage:
+## Examples
+
+Create client:
 
 ```python
 #!/usr/bin/env python
@@ -16,13 +20,22 @@ import sys
 
 from cpanel_api import *
 
-logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
+logging.basicConfig(level=logging.WARNING, stream=sys.stderr)
 
 hostname = 'HOSTNAME_OR_IPADRESS'
 username = 'USERNAME'
 password = 'PASSWORD'
 
 client = CPanelApi(hostname, username, password)
+```
+
+Function call syntax:
+
+```python
+client.api_version.ModuleName.function_name({'param': 'value'})
+client.api_version.ModuleName.function_name(param='value')
+client.api_version.ModuleName.function_name({'param': 'value'}, param='value')
+client.api_cal('version', 'ModuleName', 'function_name', {'param': 'value'}, param='value')
 ```
 
 Domain list:
@@ -57,15 +70,6 @@ Out [20]:
   'event': {'result': 1}}}
 ```
 
-Function call syntax:
-
-```python
-client.api_version.ModuleName.function_name({'param': 'value'})
-client.api_version.ModuleName.function_name(param='value')
-client.api_version.ModuleName.function_name({'param': 'value'}, param='value')
-client.api_cal('version', 'ModuleName', 'function_name', {'param': 'value'}, param='value')
-```
-
-Links:
+## Links:
 
 - [Official documentation](https://documentation.cpanel.net/display/DD/Developer+Documentation+Home).
