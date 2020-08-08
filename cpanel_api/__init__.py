@@ -153,6 +153,7 @@ class CPanelApi:
             path: str = f'/execute/{module}/{function}'
         else:
             raise ValueError(f'unknown version: {v}')
+        logger.debug('params=%s', ','.(params))
         url = uparse.urljoin(self.base_url, path)
         headers = {'Authorization': self.auth}
         r: requests.Response = self.session.post(
