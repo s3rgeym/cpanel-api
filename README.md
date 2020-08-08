@@ -1,6 +1,6 @@
 # CPanel API Client for Python
 
-Supports only UAPI.
+Supports cPanel API 2 and UAPI.
 
 ```zsh
 $ pip install cpanel-api
@@ -22,31 +22,50 @@ hostname = 'HOSTNAME_OR_IPADRESS'
 username = 'USERNAME'
 password = 'PASSWORD'
 
-client = CPanelClient(hostname, username, password)
+client = CPanelApi(hostname, username, password)
+```
 
-r = client.SSH.get_port()
-print('SSH port:', r.data.port)
+Domain list:
 
-from pprint import pprint
-r = client.DomainInfo.list_domains()
-pprint(r.data)
+```ipython
+In [10]: client.uapi.DomainInfo.list_domains()
+Out [10]:
+{'messages': None,
+ 'status': 1,
+ 'data': {'main_domain': 'site.info',
+  'sub_domains': ['cabinet.site.info',
+   'news.site.info',
+   'shop.site.info'],
+  'parked_domains': [],
+  'addon_domains': []},
+ 'errors': None,
+ 'metadata': {},
+ 'warnings': None}
+```
+
+SSH kyes:
+
+```ipython
+In [20]: client.cpanel2.SSH.listkeys()
+Out [20]:
+{'cpanelresult': {'postevent': {'result': 1},
+  'apiversion': 2,
+  'preevent': {'result': 1},
+  'module': 'SSH',
+  'func': 'listkeys',
+  'data': [],
+  'event': {'result': 1}}}
 ```
 
 Function call syntax:
 
 ```python
-client.ModuleName.function_name({'param': 'value'})
-client.ModuleName.function_name(param='value')
-client.ModuleName.function_name({'param': 'value'}, param='value')
-client.api('ModuleName', 'function_name', {'param': 'value'}, param='value')
-```
-
-Pagination:
-
-```python
-client.ModuleName.function_name({'api.paginate': 1, 'api.paginate_size': 10, 'api.paginate_page': 2})
+client.api_version.ModuleName.function_name({'param': 'value'})
+client.api_version.ModuleName.function_name(param='value')
+client.api_version.ModuleName.function_name({'param': 'value'}, param='value')
+client.api_cal('version', 'ModuleName', 'function_name', {'param': 'value'}, param='value')
 ```
 
 Links:
 
-- [Official documentation](https://documentation.cpanel.net/display/DD/Guide+to+UAPI).
+- [Official documentation](https://documentation.cpanel.net/display/DD/Developer+Documentation+Home).
