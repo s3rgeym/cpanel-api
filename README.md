@@ -10,7 +10,7 @@ $ pip install cpanel-api
 
 ## Examples
 
-Create client:
+Basic usage:
 
 ```python
 #!/usr/bin/env python
@@ -27,6 +27,8 @@ username = 'USERNAME'
 password = 'PASSWORD'
 
 client = CPanelApi(hostname, username, password)
+r = client.cpanel2.DomainLookup.getdocroot(domain='site.info')
+print(r.cpanelresult.data[0].reldocroot)  # public_html
 ```
 
 Function call syntax:
@@ -39,38 +41,6 @@ client.api_cal('api_version', 'ModuleName', 'function_name', {'param': 'value'},
 ```
 
 Where `api_version` is `cpanel2` or `uapi`.
-
-Domain list:
-
-```python
-In [10]: client.uapi.DomainInfo.list_domains()
-Out [10]:
-{'messages': None,
- 'status': 1,
- 'data': {'main_domain': 'site.info',
-  'sub_domains': ['cabinet.site.info',
-   'news.site.info',
-   'shop.site.info'],
-  'parked_domains': [],
-  'addon_domains': []},
- 'errors': None,
- 'metadata': {},
- 'warnings': None}
-```
-
-SSH kyes:
-
-```python
-In [20]: client.cpanel2.SSH.listkeys()
-Out [20]:
-{'cpanelresult': {'postevent': {'result': 1},
-  'apiversion': 2,
-  'preevent': {'result': 1},
-  'module': 'SSH',
-  'func': 'listkeys',
-  'data': [],
-  'event': {'result': 1}}}
-```
 
 ## Links:
 
