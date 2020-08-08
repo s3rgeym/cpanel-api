@@ -20,7 +20,7 @@ import sys
 
 from pprint import pprint
 
-from cpanel_api import *
+from cpanel_api import CPanelApi
 
 logging.basicConfig(level=logging.WARNING, stream=sys.stderr)
 
