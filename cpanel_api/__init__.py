@@ -11,20 +11,12 @@ from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 __author__ = 'Sergey M'
 __email__ = 'yamldeveloper@proton.me'
 __copyright__ = 'Copyright 2020, Sergey M'
 __license__ = 'MIT'
 __url__ = 'https://github.com/s3rgeym/cpanel-api'
-
-__all__ = (
-    'BadResponse',
-    'CPanelClient',
-    'ClientError',
-    'Result',
-    'Unauthorized',
-)
 
 DEFAULT_USER_AGENT = (
     'Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101 Firefox/68.0'
@@ -60,20 +52,38 @@ class Result(AttrDict):
     pass
 
 
-class ApiCallWrapper:
-    def __init__(self, client: 'CPanelClient', module: str) -> None:
+ApiVersion = Literal['cpanel2', 'uapi']
+
+
+class Api:
+    def __init__(self, version: ApiVersion, client: 'CPanelApi') -> None:
+        self.version = version
         self.client = client
-        self.module = module
 
-    def __getattr__(self, name: str) -> Callable[..., Result]:
-        def f(*args: Tuple[Any], **kw: Dict[str, Any]) -> Any:
-            return self.client.api(self.module, name, *args, **kw)
-
-        f.__name__ = name
-        return f
+    def __getattr__(self, attr: str) -> 'Scope':
+        return Scope(attr, self)
 
 
-class CPanelClient:
+class Scope:
+    def __init__(self, name: str, api: Api) -> None:
+        self.name = name
+        self.api = api
+
+    def __getattr__(
+        self, attr: str
+    ) -> Callable[[Tuple[str, ...], Dict[str, Any]], Result]:
+        function_name = attr
+
+        def func(*args: Tuple[Any, ...], **kwargs: Dict[str, Any]) -> Result:
+            return self.api.client.call_api(
+                self.api.version, self.name, function_name, *args, **kwargs
+            )
+
+        func.__name__ = function_name
+        return func
+
+
+class CPanelApi:
     def __init__(
         self,
         hostname: str,
@@ -104,8 +114,8 @@ class CPanelClient:
     def auth(self) -> str:
         credentials: str = f'{self.username}:{self.password}'
         if self.auth_type == 'password':
-            encoded = b64encode(credentials.encode()).decode()
-            auth = f'Basic {encoded}'
+            enc = b64encode(credentials.encode()).decode()
+            auth = f'Basic {enc}'
         elif self.auth_type == 'hash':
             auth = f'WHM {credentials}'
         elif self.auth_type == 'token':
@@ -120,22 +130,35 @@ class CPanelClient:
             'https' if self.ssl else 'http', self.hostname, self.port
         )
 
-    def api(
+    def call_api(
         self,
+        v: ApiVersion,
         module: str,
         function: str,
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Dict[str, Any],
     ) -> Result:
-        url = uparse.urljoin(self.base_url, f'/execute/{module}/{function}')
         params = dict(params or {})
         params.update(kwargs)
-        logger.debug('request params: %s', ', '.join(params))
+        if v == 'cpanel2':
+            path: str = '/json-api/cpanel'
+            params = {
+                'cpanel_jsonapi_user': self.username,
+                'cpanel_jsonapi_apiversion': '2',
+                'cpanel_jsonapi_module': module,
+                'cpanel_jsonapi_func': function,
+                **params,
+            }
+        elif v == 'uapi':
+            path: str = f'/execute/{module}/{function}'
+        else:
+            raise ValueError(f'unknown version: {v}')
+        url = uparse.urljoin(self.base_url, path)
         headers = {'Authorization': self.auth}
-        r = self.session.post(
+        r: requests.Response = self.session.post(
             url,
             params,
-            follow_redirects=False,
+            allow_redirects=False,
             headers=headers,
             timeout=self.timeout,
             verify=self.verify,
@@ -143,9 +166,9 @@ class CPanelClient:
         if r.status_code == 401:
             raise Unauthorized()
         try:
-            return r.json(object_hook=AttrDict)
+            return r.json(object_hook=Result)
         except ValueError:
             raise BadResponse()
 
-    def __getattr__(self, name: str) -> ApiCallWrapper:
-        return ApiCallWrapper(self, name)
+    def __getattr__(self, attr: str) -> Api:
+        return Api(attr, self)

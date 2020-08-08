@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "cpanel-api"
-version = "0.1.2"
-description = "CPanel API Client. Supports latest UAPI."
+version = "0.2.0"
+description = "CPanel API Client. Supports cPanel API 2 and UAPI."
 homepage = "https://github.com/s3rgeym/cpanel-api"
 readme = "README.md"
 authors = ["Sergey M <yamldeveloper@proton.me>"]
