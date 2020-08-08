@@ -27,7 +27,7 @@ client = CPanelApi(hostname, username, password)
 
 Domain list:
 
-```ipython
+```python
 In [10]: client.uapi.DomainInfo.list_domains()
 Out [10]:
 {'messages': None,
@@ -45,7 +45,7 @@ Out [10]:
 
 SSH kyes:
 
-```ipython
+```python
 In [20]: client.cpanel2.SSH.listkeys()
 Out [20]:
 {'cpanelresult': {'postevent': {'result': 1},
