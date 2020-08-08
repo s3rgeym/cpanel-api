@@ -38,7 +38,7 @@ client.api_version.ModuleName.function_name({'param': 'value'}, param='value')
 client.api_cal('api_version', 'ModuleName', 'function_name', {'param': 'value'}, param='value')
 ```
 
-where `api_version` is `cpanel2` or `uapi`.
+Where `api_version` is `cpanel2` or `uapi`.
 
 Domain list:
 
