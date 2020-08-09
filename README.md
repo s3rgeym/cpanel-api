@@ -32,9 +32,16 @@ client = CPanelApi(hostname, username, password)
 # {'warnings': None, 'errors': None, 'data': {'port': '1243'}, 'metadata': {}, 'status': 1, 'messages': None}
 r = client.uapi.SSH.get_port()
 print('SSH port:', r.data.port)
-# {'cpanelresult': {'postevent': {'result': 1}, 'apiversion': 2, 'data': [], 'func': 'listkeys', 'event': {'result': 1}, 'module': 'SSH', 'preevent': {'result': 1}}}
+# get all public ssh keys
+# {'cpanelresult': {'postevent': {'result': 1}, 'apiversion': 2, 'data': [...], 'func': 'listkeys', 'event': {'result': 1}, 'module': 'SSH', 'preevent': {'result': 1}}}
 r = client.cpanel2.SSH.listkeys()
-pprint(r.data)
+pprint(r.cpanelresult.data)
+# retrieve key
+r = client.cpanel2.SSH.fetchkey(name='id_rsa')
+# {"name": "id_rsa", "key": "ssh-rsa XXX"}
+print(r.cpanelresult.data[0].key)
+r = client.cpanel2.SSH.importkey(name='new_rsa.pub', key='*data*')
+pprint(r)
 # ...
 r = client.cpanel2.DomainLookup.getdocroot(domain='site.info')
 print(r.cpanelresult.data[0].reldocroot)  # public_html
