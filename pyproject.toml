@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cpanel-api"
-version = "0.2.1"
+version = "0.2.2"
 description = "CPanel API Client. Supports cPanel API 2 and UAPI."
 homepage = "https://github.com/tz4678/cpanel-api"
 readme = "README.md"
@@ -12,6 +12,8 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+requests = "^2.24.0"
+pysocks = "^1.7.1"
 
 [tool.poetry.dev-dependencies]
 
