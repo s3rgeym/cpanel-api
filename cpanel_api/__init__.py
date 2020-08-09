@@ -11,7 +11,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
-__version__ = '0.2.0'
+__version__ = '0.2.2'
 __author__ = 'Sergey M'
 __email__ = 'yamldeveloper@proton.me'
 __copyright__ = 'Copyright 2020, Sergey M'
