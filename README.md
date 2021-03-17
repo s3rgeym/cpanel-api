@@ -1,5 +1,9 @@
 # CPanel API Client for Python
 
+[![Downloads](https://pepy.tech/badge/cpanelapi)](https://pepy.tech/project/cpanelapi)
+[![Downloads](https://pepy.tech/badge/cpanelapi/month)](https://pepy.tech/project/cpanelapi)
+[![Downloads](https://pepy.tech/badge/cpanelapi/week)](https://pepy.tech/project/cpanelapi)
+
 Supports cPanel API 2 and UAPI.
 
 ## Install
