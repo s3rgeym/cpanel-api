@@ -91,7 +91,7 @@ class CPanelApi:
         password: str,
         port: int = 2083,
         *,
-        auth_type: Literal['hash', 'password', 'token'] = 'password',
+        auth_type: Literal['hash', 'password', 'token', 'utoken'] = 'password',
         session: Optional[requests.Session] = None,
         ssl: bool = True,
         timeout: float = 10.0,
@@ -120,6 +120,8 @@ class CPanelApi:
             auth = f'WHM {credentials}'
         elif self.auth_type == 'token':
             auth = f'whm {credentials}'
+        elif self.auth_type == 'utoken':
+            auth = f'cpanel {credentials}'
         else:
             raise ValueError(f'unknown auth type: {self.auth_type!r}')
         return auth
