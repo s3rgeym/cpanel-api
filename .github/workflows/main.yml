@@ -1,4 +1,4 @@
-name: Python package
+name: Publish to PYPI
 on:
   push:
     tags:
