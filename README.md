@@ -33,6 +33,10 @@ username = 'USERNAME'
 password = 'PASSWORD'
 
 client = CPanelApi(hostname, username, password)
+
+# Alternatively, to authenticate using a UAPI or cPanel API 2 token, use:
+# client = CPanelApi(hostname, username, '<TOKEN>', auth_type = 'utoken')
+
 # {'warnings': None, 'errors': None, 'data': {'port': '1243'}, 'metadata': {}, 'status': 1, 'messages': None}
 r = client.uapi.SSH.get_port()
 print('SSH port:', r.data.port)
