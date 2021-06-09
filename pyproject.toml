@@ -4,7 +4,7 @@ version = "0.3.0"
 description = "CPanel API Client. Supports cPanel API 2 and UAPI."
 homepage = "https://github.com/s3rgeym/cpanel-api"
 readme = "README.md"
-authors = ["Sergey M <yamldeveloper@proton.me>"]
+authors = ["Sergey M <yamldeveloper@proton.me>", "Marco Bravo Mejías <marco@layfellow.net>"]
 classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: Utilities"
